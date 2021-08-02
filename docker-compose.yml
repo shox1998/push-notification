@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mariadb:
+    image: mariadb:10.6.0
+    restart: on-failure
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: passwd
+      MYSQL_DATABASE: kibera
+      MYSQL_USER: kibera
+      MYSQL_PASSWORD: passwd
+    networks:
+      - kibera-network
+networks:
+  kibera-network:
+    driver: bridge

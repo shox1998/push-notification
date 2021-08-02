@@ -6,8 +6,10 @@ import uz.kibera.project.dao.entity.Role;
 @Data
 public class UserDto {
     private long id;
-    private String login;
+    private String username;
     private Role role;
-    private UserStatus status;
+    private String firstName;
+    private String lastName;
+//    private UserStatus status;
     private Boolean locked;
 }

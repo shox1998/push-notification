@@ -1,9 +1,11 @@
 package uz.kibera.project.dto;
 
 import lombok.Data;
+import uz.kibera.project.dao.entity.Role;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class AuthenticationRequest {
@@ -13,14 +15,4 @@ public class AuthenticationRequest {
 
     @NotBlank
     private String password;
-
-    @NotBlank
-    private String firstName;
-
-    @NotBlank
-    private String lastName;
-
-    @NotBlank
-    @Email
-    private String email;
 }

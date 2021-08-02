@@ -22,7 +22,6 @@ import java.util.Date;
  * Util class that provides methods for generation, validation, etc. of JWT token.
  *
  * @author Shohruhmirzo
- *
  */
 @Component
 @RequiredArgsConstructor
@@ -45,11 +44,11 @@ public class JwtTokenProvider {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(String username, Role role) {
+    public String createToken(String username, Role role, Long id) {
 
         Claims claims = Jwts.claims().setSubject(username);
+        claims.put("id", id);
         claims.put("role", role);
-
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 

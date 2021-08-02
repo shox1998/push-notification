@@ -1,9 +1,15 @@
 package uz.kibera.project.dao.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import uz.kibera.project.dao.AbstractBaseEntity;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -39,5 +45,5 @@ public class User extends AbstractBaseEntity<Long> {
     private Role role;
 
     @Column(name = "is_locked")
-    boolean locked;
+    private Boolean locked = true;
 }

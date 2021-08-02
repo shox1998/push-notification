@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import uz.kibera.project.exception.JwtAuthenticationException;
+import uz.kibera.project.exception.UserNotFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -82,11 +83,11 @@ public class ControllerAdvice {
 //        return uz.davrbank.davrpay.auth.controllers.ErrorResponse.of(ResponseCode.INVALID_USER_PASSWORD);
 //    }
 
-//    @ExceptionHandler(UserNotFoundException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    ErrorResponse on(UserNotFoundException ignored) {
-//        return ErrorResponse.of(ResponseCode.USER_NOT_FOUND);
-//    }
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse on(UserNotFoundException ignored) {
+        return ErrorResponse.of(ResponseCode.USER_NOT_FOUND);
+    }
 //
 //    @ExceptionHandler(InvalidUserStateException.class)
 //    @ResponseStatus(HttpStatus.BAD_REQUEST)

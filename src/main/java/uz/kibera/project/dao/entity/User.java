@@ -44,6 +44,6 @@ public class User extends AbstractBaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name = "is_locked")
-    private Boolean locked = true;
+    @Column(name = "is_locked",columnDefinition = "boolean default false")
+    private Boolean locked = false;
 }

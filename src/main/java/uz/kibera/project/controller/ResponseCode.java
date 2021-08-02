@@ -11,7 +11,7 @@ public enum ResponseCode {
     VALIDATION_ERROR(499, "Validation error"),
     BLOCKED_ACCOUNT(495, "Your account has been blocked due to suspicious activity, please contact support."),
     INVALID_ACCESS_TOKEN(401, "JWT token is expired or invalid"),
-    USER_NOT_FOUND(402, "Username not found"),
+    USER_NOT_FOUND(402, "User not found"),
     ILLEGAL_USER_STATUS(403, "Illegal user status"),
     USERNAME_ALREADY_EXIST(405, "This username already exist"),
     INVALID_FILE_TYPE(1010, "File must be an image"),

@@ -45,6 +45,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.getLocked();
+        return !user.getLocked();
     }
 }

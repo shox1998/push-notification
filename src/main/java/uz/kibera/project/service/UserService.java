@@ -15,11 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.kibera.project.configuration.jwt.JwtTokenProvider;
 import uz.kibera.project.dao.entity.User;
 import uz.kibera.project.dao.repository.UserRepository;
-import uz.kibera.project.dto.AccessTokenResponse;
-import uz.kibera.project.dto.AuthenticationRequest;
-import uz.kibera.project.dto.RegistrationRequest;
-import uz.kibera.project.dto.UserDto;
+import uz.kibera.project.dto.*;
 import uz.kibera.project.exception.UserNameAlreadyExistException;
+import uz.kibera.project.exception.UserNotFoundException;
 import uz.kibera.project.mapper.UserMapper;
 
 import java.util.Optional;
@@ -40,18 +38,24 @@ public class UserService {
     }
 
     public AccessTokenResponse authenticate(AuthenticationRequest authenticationRequest){
+        log.info("Request handled for authenticate user with {} username", authenticationRequest.getUsername());
         try {
-            log.info("hello");
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-            User user = getUserByUsername(authentication.getName()).orElseThrow();
+
+            User user = getUserByUsername(authentication.getName()).orElseThrow(() -> {
+                throw new UserNotFoundException();
+            });
+
             return AccessTokenResponse.builder()
                     .accessToken(jwtTokenProvider.createToken(user.getUsername(), user.getRole(), user.getId()))
                     .build();
+
         } catch (AuthenticationException exception) {
                 throw new BadCredentialsException("Incorrect username or password");
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public AccessTokenResponse register(RegistrationRequest registrationRequest) {
         log.info("Handled request for register");
         if(getUserByUsername(registrationRequest.getUsername()).isPresent()) {
@@ -74,9 +78,34 @@ public class UserService {
                 .build();
     }
 
-    public Page<UserDto> fetchUsers(Pageable pageable) {
+    @Transactional(rollbackFor = Exception.class)
+    public Page<UserResponse> fetchUsers(Pageable pageable) {
 
         Page<User> userPage = userRepository.findAll(pageable);
-        return userPage.map(userMapper::tUserDto);
+        return userPage.map(userMapper::toUserResponse);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void makeDisableOrEnable(Long id) {
+        log.info("Request handled for enabling or disabling user with {} id", id);
+        User user = fetchUser(id);
+        user.setLocked(!user.getLocked());
+        userRepository.save(user);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public User fetchUser(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> {
+           log.error("User not found with {} id", id);
+            throw new UserNotFoundException();
+        });
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public UserResponse updateUserEntity(Long id, UpdatingUserDto updatingUserDto) {
+        log.info("Request handled for updating user");
+        User user = fetchUser(id);
+        userMapper.updateEntity(user, updatingUserDto);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 }

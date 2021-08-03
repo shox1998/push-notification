@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import uz.kibera.project.exception.EmptyFileException;
 import uz.kibera.project.exception.JwtAuthenticationException;
 import uz.kibera.project.exception.UserNotFoundException;
 
@@ -59,11 +60,11 @@ public class ControllerAdvice {
 //        return uz.davrbank.davrpay.auth.controllers.ErrorResponse.of(ResponseCode.IMAGE_NOT_FOUND);
 //    }
 //
-//    @ExceptionHandler(InvalidFileSizeException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    uz.davrbank.davrpay.auth.controllers.ErrorResponse on(InvalidFileSizeException ignored) {
-//        return uz.davrbank.davrpay.auth.controllers.ErrorResponse.of(ResponseCode.FILE_IS_EMPTY);
-//    }
+    @ExceptionHandler(EmptyFileException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse on(EmptyFileException ignored) {
+        return ErrorResponse.of(ResponseCode.FILE_IS_EMPTY);
+    }
 //
 //    @ExceptionHandler(InvalidFileFormat.class)
 //    @ResponseStatus(HttpStatus.BAD_REQUEST)

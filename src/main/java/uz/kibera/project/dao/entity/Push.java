@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 import uz.kibera.project.dao.AbstractBaseEntity;
 import uz.kibera.project.dao.entity.types.PushType;
 
@@ -29,6 +30,7 @@ import uz.kibera.project.dao.entity.types.PushType;
 @Table(name = "pushes")
 public class Push extends AbstractBaseEntity<UUID> {
     @Id
+    @Type(type="uuid-char")
     private UUID id;
 
     private String title;

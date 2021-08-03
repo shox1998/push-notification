@@ -72,8 +72,9 @@ public class UserService {
                 .email(registrationRequest.getEmail())
                 .role(registrationRequest.getRole())
                 .build();
-        userRepository.save(user);
+        user = userRepository.save(user);
         log.info("User by {} username successfully registered", user.getUsername());
+
         return AccessTokenResponse.builder()
                 .accessToken(jwtTokenProvider.createToken(user.getUsername(), user.getRole(), user.getId()))
                 .build();

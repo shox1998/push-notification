@@ -35,7 +35,6 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/**").permitAll()
                 .antMatchers(
                         "/v2/api-docs",
                         "/swagger-resources",
@@ -43,7 +42,9 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/configuration/ui",
                         "/configuration/security",
                         "/swagger-ui.html",
-                        "/webjars/**").permitAll()
+                        "/webjars/**",
+                        "/admin/**",
+                        "/user/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtTokenConfigurer(jwtTokenProvider));

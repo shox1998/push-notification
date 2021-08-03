@@ -13,24 +13,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import uz.kibera.project.dao.entity.Role;
-import uz.kibera.project.dto.AccessTokenResponse;
-import uz.kibera.project.dto.PushDto;
-import uz.kibera.project.dto.PushRequest;
-import uz.kibera.project.dto.RegistrationRequest;
-import uz.kibera.project.dto.UserResponse;
+import uz.kibera.project.dto.*;
 //import uz.kibera.project.service.NotificationService;
 import uz.kibera.project.service.NotificationService;
 import uz.kibera.project.service.UserService;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@PreAuthorize("hasAuthority('ADMIN')")
+//@PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @GetMapping(value = "/list/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserResponse>>  fetchUsers(@PageableDefault(sort = "username") Pageable pageable) {
@@ -67,6 +64,28 @@ public class AdminController {
     @DeleteMapping("/delete/push/{id}")
     public ResponseEntity<Void> deletePush(@PathVariable UUID id) {
         notificationService.deletePush(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/create/notice", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> createNoticeNotification(@Valid @RequestBody NoticeRequest noticeRequest) {
+        notificationService.createNotice(noticeRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadFile(@RequestParam("image")MultipartFile multipartFile) {
+        return ResponseEntity.ok(notificationService.uploadFile(multipartFile));
+    }
+
+    @GetMapping(value = "/fetch/all/notices", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<NoticeDto>> fetchAllNotices(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(notificationService.fetchAllNotices(pageable));
+    }
+
+    @DeleteMapping("/delete/notice/{id}")
+    public ResponseEntity<Void> deleteNotice(@PathVariable UUID id) {
+        notificationService.deleteNotice(id);
         return ResponseEntity.ok().build();
     }
 }

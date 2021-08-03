@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 import uz.kibera.project.dao.AbstractBaseEntity;
 import uz.kibera.project.dao.entity.types.NoticeType;
 
@@ -30,6 +31,7 @@ import uz.kibera.project.dao.entity.types.NoticeType;
 @Table(name = "notices")
 public class Notice extends AbstractBaseEntity<UUID> {
     @Id
+    @Type(type="uuid-char")
     private UUID id;
 
     private String title;

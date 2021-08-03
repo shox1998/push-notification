@@ -49,12 +49,12 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("id", id);
         claims.put("role", role);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + validityInMilliseconds);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(now)
+                .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
@@ -80,12 +80,9 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            System.out.println(claims.getBody().getExpiration());
+            return !claims.getBody().getExpiration().before(new Date());
 
-            if (claims.getBody().getExpiration().before(new Date())) {
-                return false;
-            }
-
-            return true;
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtAuthenticationException("JWT token is expired or invalid");
         }

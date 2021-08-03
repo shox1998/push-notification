@@ -10,7 +10,10 @@ import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
+import uz.kibera.project.dto.NoticeRequest;
+import uz.kibera.project.dto.NotificationDto;
 import uz.kibera.project.dto.PushDto;
 import uz.kibera.project.dto.PushRequest;
 import uz.kibera.project.service.pushsender.MulticastPushSender;
@@ -21,19 +24,22 @@ import uz.kibera.project.service.pushsender.MulticastPushSender;
 public class FireBaseService {
     private final MulticastPushSender pushSender;
 
-    public void processNotification(PushRequest dto) {
+    public void processNotification(NotificationDto dto) {
         pushSender.send(createMulticastMessage(dto));
     }
 
-    private MulticastMessage createMulticastMessage(PushRequest dto) {
+    private MulticastMessage createMulticastMessage(NotificationDto dto) {
+
+        Notification notification = Notification.builder()
+                .setTitle(dto.getTitle())
+                .setBody(dto.getContent())
+                .setImage(dto.getImageUrl())
+                .build();
+
         return MulticastMessage.builder()
                 .addToken(FIREBASE_TOKEN_CONST)
-                .setNotification(Notification.builder()
-                        .setTitle(dto.getTitle())
-                        .setBody(dto.getContent())
-                        .build())
+                .setNotification(notification)
                 .putAllData(Map.of("Hello", "World!"))
                 .build();
     }
-
 }

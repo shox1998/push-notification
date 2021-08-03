@@ -37,7 +37,7 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public AccessTokenResponse authenticate(AuthenticationRequest authenticationRequest){
+    public UserResponseWithAccessToken authenticate(AuthenticationRequest authenticationRequest){
         log.info("Request handled for authenticate user with {} username", authenticationRequest.getUsername());
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
@@ -46,7 +46,8 @@ public class UserService {
                 throw new UserNotFoundException();
             });
 
-            return AccessTokenResponse.builder()
+            return UserResponseWithAccessToken.builder()
+                    .userResponse(userMapper.toUserResponse(user))
                     .accessToken(jwtTokenProvider.createToken(user.getUsername(), user.getRole(), user.getId()))
                     .build();
 

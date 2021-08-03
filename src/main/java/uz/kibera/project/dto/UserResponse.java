@@ -1,6 +1,7 @@
 package uz.kibera.project.dto;
 
 import lombok.Data;
+import uz.kibera.project.dao.entity.Role;
 
 @Data
 public class UserResponse {
@@ -9,5 +10,6 @@ public class UserResponse {
     private String email;
     private String firstName;
     private String lastName;
+    private Role role;
     private Boolean locked;
 }

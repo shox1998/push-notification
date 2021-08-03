@@ -27,6 +27,8 @@ public abstract class AbstractBaseEntity<E> implements Persistable<E>, Serializa
         return isNew;
     }
 
+    private boolean deleted = false;
+
     @EqualsAndHashCode.Exclude
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
@@ -36,4 +38,7 @@ public abstract class AbstractBaseEntity<E> implements Persistable<E>, Serializa
     @LastModifiedDate
     @Column(name = "modified_at", nullable = false)
     private LocalDateTime modified;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 }

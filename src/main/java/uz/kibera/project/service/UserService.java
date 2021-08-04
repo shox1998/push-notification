@@ -16,11 +16,13 @@ import uz.kibera.project.configuration.jwt.JwtTokenProvider;
 import uz.kibera.project.dao.entity.User;
 import uz.kibera.project.dao.repository.UserRepository;
 import uz.kibera.project.dto.*;
+import uz.kibera.project.exception.EmailAlreadyExistException;
 import uz.kibera.project.exception.UserNameAlreadyExistException;
 import uz.kibera.project.exception.UserNotFoundException;
 import uz.kibera.project.mapper.UserMapper;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -62,6 +64,8 @@ public class UserService {
         if(getUserByUsername(registrationRequest.getUsername()).isPresent()) {
             throw new UserNameAlreadyExistException("This username already exist");
         }
+
+        checkEmail(registrationRequest.getEmail());
 
         User user= User.builder()
                 .username(registrationRequest.getUsername())
@@ -109,5 +113,24 @@ public class UserService {
         User user = fetchUser(id);
         userMapper.updateEntity(user, updatingUserDto);
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    public UserResponse updateUser(Long id, UpdatingUserRequest userRequest) {
+        User updatableUser = fetchUser(id);
+        checkEmail(userRequest.getEmail());
+        User user = User.builder()
+                .firstName(userRequest.getFirsName())
+                .lastName(userRequest.getLastName())
+                .email(userRequest.getEmail())
+                .password(passwordEncoder.encode(userRequest.getPassword()))
+                .role(userRequest.getRole()).build();
+        log.info("Updated User by {} id", id);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    private void checkEmail(String email) {
+        if (userRepository.findAll().stream().filter(user -> user.getEmail().equals(email)).count() > 0) {
+             throw new EmailAlreadyExistException();
+        }
     }
 }

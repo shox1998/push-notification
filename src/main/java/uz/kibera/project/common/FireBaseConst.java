@@ -4,5 +4,6 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class FireBaseConst {
-    public static final String FIREBASE_TOKEN_CONST = "ecupQuwAfYY:APA91bHF7LYM3JgoIkWM6bYOfGLi_3bJmVu0KwjlAH5rRGrjHJzy7sGhQCymRoMPtdkaGm3FVvqPNq7nYgaCou_aNDHWXUAXkNsKsXWwIKTztlrqneFjpkpJs94AyueWSqn7XpHdVS5N";
+    public static final String FIREBASE_TOKEN_CONST = "chUQFITZkKc:APA91bGWlT-7hRr9Acjq6joprPcnFGWEbSpljCs7dwLALfM0Zh6cg7E6jOgdf2ZF8TCq9nPP5TdiAK1ih9n-A5PYC-S-iVulIsUdxARblBp3PmPPI3i8lG2GODfLjAiHIzfMi2XemkZO";
+    public static final String STATIC_IMAGE_URL="https://commons.bmstu.wiki/images/5/59/Spring-boot-logo.png";
 }

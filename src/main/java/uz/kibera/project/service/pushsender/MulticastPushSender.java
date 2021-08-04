@@ -1,5 +1,6 @@
 package uz.kibera.project.service.pushsender;
 
+import com.google.firebase.FirebaseException;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -7,6 +8,7 @@ import com.google.firebase.messaging.MulticastMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uz.kibera.project.exception.CustomFirebaseException;
 
 @Slf4j
 @Service
@@ -29,7 +31,7 @@ public class MulticastPushSender {
             });
         } catch (FirebaseMessagingException e) {
             log.error("Failed to send push notification. Reason: " + e.getLocalizedMessage());
-            //TODO Firebase Exception
+            throw new CustomFirebaseException(e.getLocalizedMessage());
         }
     }
 }

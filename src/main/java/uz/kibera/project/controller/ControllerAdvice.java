@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import uz.kibera.project.exception.EmptyFileException;
-import uz.kibera.project.exception.JwtAuthenticationException;
-import uz.kibera.project.exception.UserNotFoundException;
+import uz.kibera.project.exception.*;
+
+import static uz.kibera.project.controller.ResponseCode.FIRE_BASE_SEND_FAILED;
+import static uz.kibera.project.controller.ResponseCode.USERNAME_ALREADY_EXIST;
 
 @RestControllerAdvice
 @Slf4j
@@ -47,6 +48,7 @@ public class ControllerAdvice {
     ErrorResponse on(BadCredentialsException exception) {
         return ErrorResponse.of(ResponseCode.BAD_CREDENTIALS);
     }
+
     @ExceptionHandler(JwtAuthenticationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse on(JwtAuthenticationException e) {
@@ -59,48 +61,47 @@ public class ControllerAdvice {
         return ErrorResponse.of(ResponseCode.FILE_IS_TO_LARGE);
     }
 
-//    @ExceptionHandler(ImageNotFoundException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    ErrorResponse on(ImageNotFoundException exception) {
-//        return uz.davrbank.davrpay.auth.controllers.ErrorResponse.of(ResponseCode.IMAGE_NOT_FOUND);
-//    }
-//
+    @ExceptionHandler(UserNameAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse on(UserNameAlreadyExistException ex) {
+        return ErrorResponse.of(USERNAME_ALREADY_EXIST);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse on(EmailAlreadyExistException exception) {
+        return ErrorResponse.of(ResponseCode.EMAIL_ALREADY_EXIST);
+    }
+
     @ExceptionHandler(EmptyFileException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse on(EmptyFileException ignored) {
         return ErrorResponse.of(ResponseCode.FILE_IS_EMPTY);
     }
-//
-//    @ExceptionHandler(InvalidFileFormat.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    uz.davrbank.davrpay.auth.controllers.ErrorResponse on(InvalidFileFormat ignored) {
-//        return uz.davrbank.davrpay.auth.controllers.ErrorResponse.of(ResponseCode.INVALID_FILE_TYPE);
-//    }
-//
-//    @ExceptionHandler(InvalidConfirmPassword.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    uz.davrbank.davrpay.auth.controllers.ErrorResponse on(InvalidConfirmPassword ignored) {
-//        return uz.davrbank.davrpay.auth.controllers.ErrorResponse.of(ResponseCode.INVALID_CONFIRM_PASSWORD);
-//    }
 
-//    @ExceptionHandler(InvalidUserPassword.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    uz.davrbank.davrpay.auth.controllers.ErrorResponse on(InvalidUserPassword ignored) {
-//        return uz.davrbank.davrpay.auth.controllers.ErrorResponse.of(ResponseCode.INVALID_USER_PASSWORD);
-//    }
+    @ExceptionHandler(NoticeNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse on(NoticeNotFoundException ignored) {
+        return ErrorResponse.of(ResponseCode.NOTICE_NOT_FOUND);
+    }
+
+    @ExceptionHandler(PushNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse on(PushNotFoundException ignored) {
+        return ErrorResponse.of(ResponseCode.PUSH_NOT_FOUND);
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse on(UserNotFoundException ignored) {
         return ErrorResponse.of(ResponseCode.USER_NOT_FOUND);
     }
-//
-//    @ExceptionHandler(InvalidUserStateException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    ErrorResponse on(InvalidUserStateException ignored) {
-//        return ErrorResponse.of(ResponseCode.ILLEGAL_USER_STATUS);
-//    }
 
+    @ExceptionHandler(CustomFirebaseException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse on(CustomFirebaseException exception) {
+        return ErrorResponse.of(FIRE_BASE_SEND_FAILED.getCode(), FIRE_BASE_SEND_FAILED.getMessage() + exception.getMessage());
+    }
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse on(ConstraintViolationException e) {

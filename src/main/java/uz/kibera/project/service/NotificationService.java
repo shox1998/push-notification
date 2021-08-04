@@ -17,6 +17,8 @@ import uz.kibera.project.dao.repository.NoticeRepository;
 import uz.kibera.project.dao.repository.PushRepository;
 import uz.kibera.project.dto.*;
 import uz.kibera.project.exception.EmptyFileException;
+import uz.kibera.project.exception.NoticeNotFoundException;
+import uz.kibera.project.exception.PushNotFoundException;
 import uz.kibera.project.mapper.NotificationMapper;
 
 import java.io.File;
@@ -27,6 +29,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
+
+import static uz.kibera.project.common.FireBaseConst.STATIC_IMAGE_URL;
 
 @Service
 @Slf4j
@@ -45,6 +49,7 @@ public class NotificationService {
 
     private final FireBaseService fireBaseService;
 
+    @Transactional(rollbackFor = Exception.class)
     public void createPush(final PushRequest pushRequest) {
         Push push = notificationMapper.toNewPushEntity(pushRequest);
         NotificationDto notificationDto = NotificationDto.builder()
@@ -53,27 +58,30 @@ public class NotificationService {
                 .imageUrl("")
                 .build();
         fireBaseService.processNotification(notificationDto);
-        log.info("Push notification sent!");
+        log.info("Push notification sent! And saved.");
         pushRepository.save(push);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Page<PushDto> fetchAllPushes(Pageable pageable) {
         Page<Push> allPushes = pushRepository.findAllByDeletedIsFalse(pageable);
+        log.info("All Pushes retrieved.");
         return allPushes.map(notificationMapper::toPushDto);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void deletePush(UUID id) {
         Push deletingPush = fetchPush(id);
         deletingPush.setDeleted(true);
         deletingPush.setDeletedAt(LocalDateTime.now());
+        log.info("Deleted Push with {} id at {}", id, deletingPush.getDeletedAt());
         pushRepository.save(deletingPush);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public Push fetchPush(UUID id) {
         return pushRepository.findById(id).orElseThrow(() -> {
-            //TODO create pushException
-            throw new RuntimeException();
+            throw new PushNotFoundException();
         });
     }
 
@@ -111,7 +119,7 @@ public class NotificationService {
     @Transactional(rollbackFor = Exception.class)
     public void createNotice(NoticeRequest noticeRequest) {
         if (!ObjectUtils.isEmpty(noticeRequest.getFileName())) {
-            noticeRequest.setFileName(fileBaseUrl.concat(noticeRequest.getFileName()));
+            noticeRequest.setFileName(STATIC_IMAGE_URL);
         }
         Notice notice = notificationMapper.toNewNoticeEntity(noticeRequest);
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -125,7 +133,7 @@ public class NotificationService {
                 .imageUrl(noticeRequest.getFileName())
                 .build();
         fireBaseService.processNotification(notificationDto);
-        log.info("Push notification sent!");
+        log.info("Notice notification sent! And saved.");
         noticeRepository.save(notice);
     }
 
@@ -140,14 +148,52 @@ public class NotificationService {
         Notice deletingNotice = fetchNotice(id);
         deletingNotice.setDeleted(true);
         deletingNotice.setDeletedAt(LocalDateTime.now());
+        log.info("Deleted Notice with {} id at {}", id, deletingNotice.getDeletedAt());
         noticeRepository.save(deletingNotice);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public Notice fetchNotice(UUID id) {
         return noticeRepository.findById(id).orElseThrow(() -> {
-            //TODO create noticeException
-            throw new RuntimeException();
+
+            throw new NoticeNotFoundException();
         });
+    }
+    @Transactional(rollbackFor = Exception.class)
+    public PushDto updatePush(PushRequest pushRequest, UUID pushId) {
+        Push updatablePush = fetchPush(pushId);
+        notificationMapper.updatePush(updatablePush, pushRequest);
+        log.info("Updated Push with {} id", pushId);
+        NotificationDto notificationDto = NotificationDto.builder()
+                .title(pushRequest.getTitle())
+                .content(pushRequest.getContent())
+                .imageUrl("")
+                .build();
+        fireBaseService.processNotification(notificationDto);
+        log.info("Push notification sent! And saved.");
+        return notificationMapper.toPushDto(pushRepository.save(updatablePush));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public NoticeDto updateNotice(NoticeRequest noticeRequest, UUID noticeId) {
+        Notice updatableNotice = fetchNotice(noticeId);
+        notificationMapper.updateNotice(updatableNotice, noticeRequest);
+        log.info("Updated Notice with {} id", noticeId);
+        if (!ObjectUtils.isEmpty(noticeRequest.getFileName())) {
+            noticeRequest.setFileName(STATIC_IMAGE_URL);
+        }
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate toDate = LocalDate.from(LocalDate.parse(noticeRequest.getToDate(), formatter));
+        LocalDate fromDate = LocalDate.from(LocalDate.parse(noticeRequest.getToDate(), formatter));
+        updatableNotice.setFromDate(fromDate);
+        updatableNotice.setToDate(toDate);
+        NotificationDto notificationDto = NotificationDto.builder()
+                .title(noticeRequest.getTitle())
+                .content(noticeRequest.getContent())
+                .imageUrl(noticeRequest.getFileName())
+                .build();
+        fireBaseService.processNotification(notificationDto);
+        log.info("Notice notification sent! And saved.");
+        return notificationMapper.toNoticeDto(noticeRepository.save(updatableNotice));
     }
 }

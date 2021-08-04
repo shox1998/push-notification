@@ -14,11 +14,15 @@ public enum ResponseCode {
     USER_NOT_FOUND(402, "User not found"),
     ILLEGAL_USER_STATUS(403, "Illegal user status"),
     USERNAME_ALREADY_EXIST(405, "This username already exist"),
-    INVALID_FILE_TYPE(1010, "File must be an image"),
-    FILE_IS_EMPTY(1011, "File is empty"),
-    FILE_IS_TO_LARGE(1012, "File is to large"),
-    IMAGE_NOT_FOUND(1013, "Image not found"),
-    BAD_CREDENTIALS(405, "Incorrect username or password");
+    EMAIL_ALREADY_EXIST(406, "This email already exist"),
+    INVALID_FILE_TYPE(407, "File must be an image"),
+    FILE_IS_EMPTY(408, "File is empty"),
+    NOTICE_NOT_FOUND(409, "Notice not found"),
+    PUSH_NOT_FOUND(410, "Push not found"),
+    IMAGE_NOT_FOUND(411, "Image not found"),
+    FILE_IS_TO_LARGE(412, "File is to large"),
+    BAD_CREDENTIALS(413, "Incorrect username or password"),
+    FIRE_BASE_SEND_FAILED(414, "Firebase unavailable. Error :");
 
     private final int code;
     private final String message;

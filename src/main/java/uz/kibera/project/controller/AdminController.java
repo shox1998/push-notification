@@ -21,8 +21,8 @@ import uz.kibera.project.service.NotificationService;
 import uz.kibera.project.service.UserService;
 
 @RestController
-@CrossOrigin(allowedHeaders = "*", origins = "*")
-//@PreAuthorize("hasAuthority('ADMIN')")
+//@CrossOrigin(allowedHeaders = "*", origins = "*")
+@PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
@@ -35,7 +35,7 @@ public class AdminController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<AccessTokenResponse> registration(@RequestBody RegistrationRequest registrationRequest)  {
+    public ResponseEntity<AccessTokenResponse> registration(@Valid @RequestBody RegistrationRequest registrationRequest)  {
         return ResponseEntity.ok(userService.register(registrationRequest));
     }
 
@@ -88,4 +88,5 @@ public class AdminController {
         notificationService.deleteNotice(id);
         return ResponseEntity.ok().build();
     }
+
 }

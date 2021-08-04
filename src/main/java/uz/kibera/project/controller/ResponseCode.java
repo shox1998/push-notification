@@ -18,8 +18,8 @@ public enum ResponseCode {
     FILE_IS_EMPTY(1011, "File is empty"),
     FILE_IS_TO_LARGE(1012, "File is to large"),
     IMAGE_NOT_FOUND(1013, "Image not found"),
+    BAD_CREDENTIALS(405, "Incorrect username or password");
 
-    ;
     private final int code;
     private final String message;
 }

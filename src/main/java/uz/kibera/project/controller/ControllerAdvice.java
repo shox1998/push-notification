@@ -11,6 +11,7 @@ import java.util.stream.StreamSupport;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,7 +42,11 @@ public class ControllerAdvice {
         }
         return ErrorResponse.of(ResponseCode.VALIDATION_ERROR.getCode(), ResponseCode.VALIDATION_ERROR.getMessage(), meta);
     }
-
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    ErrorResponse on(BadCredentialsException exception) {
+        return ErrorResponse.of(ResponseCode.BAD_CREDENTIALS);
+    }
     @ExceptionHandler(JwtAuthenticationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse on(JwtAuthenticationException e) {

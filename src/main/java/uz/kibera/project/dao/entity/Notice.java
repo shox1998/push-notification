@@ -2,10 +2,13 @@ package uz.kibera.project.dao.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -41,15 +44,16 @@ public class Notice extends AbstractBaseEntity<UUID> {
     private String content;
 
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private NoticeType noticeType;
 
     @Column(name = "image_url")
     private String imageUrl;
 
     @Column(name = "from_date")
-    private LocalDateTime fromDate;
+    private LocalDate fromDate;
 
     @Column(name = "to_date")
-    private LocalDateTime toDate;
+    private LocalDate toDate;
 
 }

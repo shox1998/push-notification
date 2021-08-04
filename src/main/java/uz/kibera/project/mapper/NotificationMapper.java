@@ -14,16 +14,16 @@ public interface NotificationMapper {
     @CreateNewEntity
     Push toNewPushEntity(PushRequest pushRequest);
 
-    @Mapping(target = "createdDate",  dateFormat = "dd-mm-yyyy hh:mm:ss a", source = "created")
+    @Mapping(target = "createdDate",  dateFormat = "dd-MM-yyyy hh:mm:ss a", source = "created")
     PushDto toPushDto(Push push);
 
     @CreateNewEntity
     @Mapping(target = "imageUrl", source = "fileName")
-    @Mapping(target = "toDate", dateFormat = "yyyy-mm-dd")
-    @Mapping(target = "fromDate", dateFormat = "yyyy-mm-dd")
+    @Mapping(target = "toDate", ignore = true)
+    @Mapping(target = "fromDate", ignore=true)
     Notice toNewNoticeEntity(NoticeRequest noticeRequest);
 
-    @Mapping(target = "fromDate",  dateFormat = "dd-mm-yyyy hh:mm:ss a")
-    @Mapping(target = "toDate",  dateFormat = "dd-mm-yyyy hh:mm:ss a")
+    @Mapping(target = "fromDate",  dateFormat = "dd-MM-yyyy")
+    @Mapping(target = "toDate",  dateFormat = "dd-MM-yyyy")
     NoticeDto toNoticeDto(Notice notice);
 }

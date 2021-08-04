@@ -1,8 +1,10 @@
 package uz.kibera.project.dto;
 
 import lombok.Data;
+import uz.kibera.project.dao.entity.types.NoticeType;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @Data
 public class NoticeRequest {
@@ -16,5 +18,7 @@ public class NoticeRequest {
     private String toDate;
 
     private String fileName;
+
+    private NoticeType noticeType;
 
 }

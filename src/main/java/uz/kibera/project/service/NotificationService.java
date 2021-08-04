@@ -21,7 +21,9 @@ import uz.kibera.project.mapper.NotificationMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -112,6 +114,11 @@ public class NotificationService {
             noticeRequest.setFileName(fileBaseUrl.concat(noticeRequest.getFileName()));
         }
         Notice notice = notificationMapper.toNewNoticeEntity(noticeRequest);
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate toDate = LocalDate.from(LocalDate.parse(noticeRequest.getToDate(), formatter));
+        LocalDate fromDate = LocalDate.from(LocalDate.parse(noticeRequest.getToDate(), formatter));
+        notice.setToDate(toDate);
+        notice.setFromDate(fromDate);
         NotificationDto notificationDto = NotificationDto.builder()
                 .title(noticeRequest.getTitle())
                 .content(noticeRequest.getContent())

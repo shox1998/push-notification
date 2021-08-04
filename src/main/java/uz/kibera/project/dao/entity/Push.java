@@ -2,6 +2,8 @@ package uz.kibera.project.dao.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
@@ -36,6 +38,7 @@ public class Push extends AbstractBaseEntity<UUID> {
     private String title;
 
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private PushType pushType;
 
     @Lob

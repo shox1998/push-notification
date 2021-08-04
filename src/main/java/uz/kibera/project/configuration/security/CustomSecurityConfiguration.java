@@ -1,5 +1,7 @@
 package uz.kibera.project.configuration.security;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.web.cors.CorsConfiguration;
 import uz.kibera.project.configuration.jwt.JwtTokenConfigurer;
 import uz.kibera.project.configuration.jwt.JwtTokenProvider;
 
@@ -29,6 +32,7 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http
                 .httpBasic().disable()
                 .csrf().disable()
@@ -43,7 +47,6 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/configuration/security",
                         "/swagger-ui.html",
                         "/webjars/**",
-                        "/admin/**",
                         "/user/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

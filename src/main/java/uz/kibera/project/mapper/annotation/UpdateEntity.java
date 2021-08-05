@@ -1,4 +1,4 @@
-package uz.kibera.project.mapper;
+package uz.kibera.project.mapper.annotation;
 
 import org.mapstruct.Mapping;
 

@@ -47,9 +47,6 @@ public class Notice extends AbstractBaseEntity<UUID> {
     @Enumerated(EnumType.STRING)
     private NoticeType noticeType;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
     @Column(name = "from_date")
     private LocalDate fromDate;
 

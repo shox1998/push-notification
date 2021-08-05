@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin(allowedHeaders = "*", origins = "*")
-@PreAuthorize("hasAuthority('ADMIN')")
+//@PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
@@ -109,11 +109,11 @@ public class AdminController {
     public ResponseEntity<NoticeDto> fetchNoticeById(@PathVariable UUID id) {
         return ResponseEntity.ok(notificationMapper.toNoticeDto(notificationService.fetchNotice(id)));
     }
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATOR')")
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFile(@RequestParam("image") MultipartFile multipartFile) {
-        return ResponseEntity.ok(notificationService.uploadFile(multipartFile));
-    }
+//    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATOR')")
+//    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<String> uploadFile(@RequestParam("image") MultipartFile multipartFile) {
+//        return ResponseEntity.ok(notificationService.uploadFile(multipartFile));
+//    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATOR')")
     @GetMapping(value = "/fetch/all/notices", produces = MediaType.APPLICATION_JSON_VALUE)

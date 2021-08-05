@@ -9,6 +9,8 @@ import uz.kibera.project.dto.NoticeDto;
 import uz.kibera.project.dto.NoticeRequest;
 import uz.kibera.project.dto.PushDto;
 import uz.kibera.project.dto.PushRequest;
+import uz.kibera.project.mapper.annotation.CreateNewEntity;
+import uz.kibera.project.mapper.annotation.UpdateEntity;
 
 @Mapper
 public interface NotificationMapper {
@@ -19,7 +21,6 @@ public interface NotificationMapper {
     PushDto toPushDto(Push push);
 
     @CreateNewEntity
-    @Mapping(target = "imageUrl", source = "fileName")
     @Mapping(target = "toDate", ignore = true)
     @Mapping(target = "fromDate", ignore = true)
     Notice toNewNoticeEntity(NoticeRequest noticeRequest);
@@ -32,7 +33,7 @@ public interface NotificationMapper {
     void updatePush(@MappingTarget Push updatablePush, PushRequest pushRequest);
 
     @UpdateEntity
-    @Mapping(target = "toDate", ignore = true)
-    @Mapping(target = "fromDate", ignore = true)
+    @Mapping(target = "toDate", dateFormat = "dd-MM-yyyy")
+    @Mapping(target = "fromDate", dateFormat = "dd-MM-yyyy")
     void updateNotice(@MappingTarget Notice updatableNotice, NoticeRequest noticeRequest);
 }

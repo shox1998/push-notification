@@ -1,4 +1,4 @@
-package uz.kibera.project.mapper;
+package uz.kibera.project.mapper.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

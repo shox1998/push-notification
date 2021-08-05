@@ -47,7 +47,7 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/configuration/security",
                         "/swagger-ui.html",
                         "/webjars/**",
-                        "/user/**").permitAll()
+                        "/user/**","/admin/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtTokenConfigurer(jwtTokenProvider))

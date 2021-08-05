@@ -6,6 +6,7 @@ import org.mapstruct.MappingTarget;
 import uz.kibera.project.dao.entity.User;
 import uz.kibera.project.dto.UpdatingUserDto;
 import uz.kibera.project.dto.UserResponse;
+import uz.kibera.project.mapper.annotation.UpdateEntity;
 
 @Mapper
 public interface UserMapper {

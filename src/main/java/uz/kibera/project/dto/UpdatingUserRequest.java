@@ -8,13 +8,9 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class UpdatingUserRequest {
-    private String firsName;
+    private String firstName;
     private String lastName;
-    @NotBlank
-    @Email
-    private String email;
 
-    @NotBlank
     private String password;
 
     private Role role;

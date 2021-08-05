@@ -50,7 +50,9 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/user/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .apply(new JwtTokenConfigurer(jwtTokenProvider));
+                .apply(new JwtTokenConfigurer(jwtTokenProvider))
+                .and()
+                .cors();
     }
 
 }

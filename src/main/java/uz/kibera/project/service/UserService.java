@@ -2,6 +2,7 @@ package uz.kibera.project.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.kibera.project.configuration.jwt.JwtTokenProvider;
+import uz.kibera.project.dao.entity.Notice;
 import uz.kibera.project.dao.entity.User;
 import uz.kibera.project.dao.repository.UserRepository;
 import uz.kibera.project.dto.*;
@@ -21,6 +23,8 @@ import uz.kibera.project.exception.UserNameAlreadyExistException;
 import uz.kibera.project.exception.UserNotFoundException;
 import uz.kibera.project.mapper.UserMapper;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -87,7 +91,7 @@ public class UserService {
     @Transactional(rollbackFor = Exception.class)
     public Page<UserResponse> fetchUsers(Pageable pageable) {
 
-        Page<User> userPage = userRepository.findAll(pageable);
+        Page<User> userPage = userRepository.findAllByDeletedIsFalse(pageable);
         return userPage.map(userMapper::toUserResponse);
     }
 
@@ -101,7 +105,7 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     public User fetchUser(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> {
+        return userRepository.findByIdAndDeletedIsFalse(id).orElseThrow(() -> {
            log.error("User not found with {} id", id);
             throw new UserNotFoundException();
         });
@@ -117,20 +121,28 @@ public class UserService {
 
     public UserResponse updateUser(Long id, UpdatingUserRequest userRequest) {
         User updatableUser = fetchUser(id);
-        checkEmail(userRequest.getEmail());
-        User user = User.builder()
-                .firstName(userRequest.getFirsName())
-                .lastName(userRequest.getLastName())
-                .email(userRequest.getEmail())
-                .password(passwordEncoder.encode(userRequest.getPassword()))
-                .role(userRequest.getRole()).build();
+        String password = ObjectUtils.isNotEmpty(userRequest.getPassword()) ? passwordEncoder.encode(userRequest.getPassword()):updatableUser.getPassword();
+        updatableUser.setFirstName(userRequest.getFirstName());
+        updatableUser.setLastName(userRequest.getLastName());
+        updatableUser.setRole(userRequest.getRole());
+        updatableUser.setPassword(password);
         log.info("Updated User by {} id", id);
-        return userMapper.toUserResponse(userRepository.save(user));
+        return userMapper.toUserResponse(userRepository.save(updatableUser));
     }
 
     private void checkEmail(String email) {
         if (userRepository.findAll().stream().filter(user -> user.getEmail().equals(email)).count() > 0) {
              throw new EmailAlreadyExistException();
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteUser(Long id) {
+        //TODO super admin
+        User deletingUser = fetchUser(id);
+        deletingUser.setDeleted(true);
+        deletingUser.setDeletedAt(LocalDateTime.now());
+        log.info("Deleted User with {} id at {}", id, deletingUser.getDeletedAt());
+        userRepository.save(deletingUser);
     }
 }

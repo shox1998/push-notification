@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.kibera.project.dao.entity.Role;
 import uz.kibera.project.dto.*;
+import uz.kibera.project.mapper.NotificationMapper;
+import uz.kibera.project.mapper.UserMapper;
 import uz.kibera.project.service.NotificationService;
 import uz.kibera.project.service.UserService;
 
@@ -19,13 +21,15 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-//@CrossOrigin(allowedHeaders = "*", origins = "*")
+@CrossOrigin(allowedHeaders = "*", origins = "*")
 @PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
     private final UserService userService;
     private final NotificationService notificationService;
+    private final UserMapper userMapper;
+    private final NotificationMapper notificationMapper;
 
     @GetMapping(value = "/list/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserResponse>> fetchUsers(@PageableDefault(sort = "username") Pageable pageable) {
@@ -40,10 +44,20 @@ public class AdminController {
         return ResponseEntity.ok(userService.register(registrationRequest));
     }
 
+    @DeleteMapping("/delete/user/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{id}/block-unblock")
     public ResponseEntity<Void> makeDisableOrEnable(@PathVariable Long id) {
         userService.makeDisableOrEnable(id);
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/fetch-user/{id}")
+    public ResponseEntity<UserResponse> fetchById(@PathVariable Long id) {
+        return ResponseEntity.ok(userMapper.toUserResponse(userService.fetchUser(id)));
     }
 
     @GetMapping(value = "/fetch/roles", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,6 +70,12 @@ public class AdminController {
     public ResponseEntity<Void> createPushNotification(@Valid @RequestBody PushRequest pushRequest) {
         notificationService.createPush(pushRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATOR')")
+    @GetMapping("/fetch-push/{id}")
+    public ResponseEntity<PushDto> fetchPushById(@PathVariable UUID id) {
+        return ResponseEntity.ok(notificationMapper.toPushDto(notificationService.fetchPush(id)));
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATOR')")
@@ -84,6 +104,11 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATOR')")
+    @GetMapping("/fetch-notice/{id}")
+    public ResponseEntity<NoticeDto> fetchNoticeById(@PathVariable UUID id) {
+        return ResponseEntity.ok(notificationMapper.toNoticeDto(notificationService.fetchNotice(id)));
+    }
     @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATOR')")
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(@RequestParam("image") MultipartFile multipartFile) {

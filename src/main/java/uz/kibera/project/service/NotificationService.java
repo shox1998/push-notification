@@ -80,7 +80,7 @@ public class NotificationService {
 
     @Transactional(rollbackFor = Exception.class)
     public Push fetchPush(UUID id) {
-        return pushRepository.findById(id).orElseThrow(() -> {
+        return pushRepository.findByIdAndDeletedIsFalse(id).orElseThrow(() -> {
             throw new PushNotFoundException();
         });
     }
@@ -154,7 +154,7 @@ public class NotificationService {
 
     @Transactional(rollbackFor = Exception.class)
     public Notice fetchNotice(UUID id) {
-        return noticeRepository.findById(id).orElseThrow(() -> {
+        return noticeRepository.findByIdAndDeletedIsFalse(id).orElseThrow(() -> {
 
             throw new NoticeNotFoundException();
         });

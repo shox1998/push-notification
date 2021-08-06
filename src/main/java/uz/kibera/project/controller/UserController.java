@@ -25,7 +25,6 @@ public class UserController {
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponseWithAccessToken> authenticateAndGetAccessToken(@Valid @RequestBody AuthenticationRequest authenticationRequest) {
-        log.info("aaa");
         return ResponseEntity.ok(userService.authenticate(authenticationRequest));
     }
     @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATOR')")

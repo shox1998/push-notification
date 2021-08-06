@@ -1,5 +1,9 @@
 package uz.kibera.project.service;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -14,19 +18,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.kibera.project.configuration.jwt.JwtTokenProvider;
-import uz.kibera.project.dao.entity.Notice;
 import uz.kibera.project.dao.entity.User;
 import uz.kibera.project.dao.repository.UserRepository;
 import uz.kibera.project.dto.*;
 import uz.kibera.project.exception.EmailAlreadyExistException;
+import uz.kibera.project.exception.UserHaveNotAccess;
 import uz.kibera.project.exception.UserNameAlreadyExistException;
 import uz.kibera.project.exception.UserNotFoundException;
 import uz.kibera.project.mapper.UserMapper;
-
-import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,10 +42,11 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public UserResponseWithAccessToken authenticate(AuthenticationRequest authenticationRequest){
+    public UserResponseWithAccessToken authenticate(AuthenticationRequest authenticationRequest) {
         log.info("Request handled for authenticate user with {} username", authenticationRequest.getUsername());
         try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            Authentication authentication =
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
             User user = getUserByUsername(authentication.getName()).orElseThrow(() -> {
                 throw new UserNotFoundException();
@@ -58,20 +58,20 @@ public class UserService {
                     .build();
 
         } catch (AuthenticationException exception) {
-                throw new BadCredentialsException("Incorrect username or password");
+            throw new BadCredentialsException("Incorrect username or password");
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
     public AccessTokenResponse register(RegistrationRequest registrationRequest) {
         log.info("Handled request for register");
-        if(getUserByUsername(registrationRequest.getUsername()).isPresent()) {
+        if (getUserByUsername(registrationRequest.getUsername()).isPresent()) {
             throw new UserNameAlreadyExistException("This username already exist");
         }
 
         checkEmail(registrationRequest.getEmail());
 
-        User user= User.builder()
+        User user = User.builder()
                 .username(registrationRequest.getUsername())
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
                 .firstName(registrationRequest.getFirstName())
@@ -106,7 +106,7 @@ public class UserService {
     @Transactional(rollbackFor = Exception.class)
     public User fetchUser(Long id) {
         return userRepository.findByIdAndDeletedIsFalse(id).orElseThrow(() -> {
-           log.error("User not found with {} id", id);
+            log.error("User not found with {} id", id);
             throw new UserNotFoundException();
         });
     }
@@ -120,8 +120,13 @@ public class UserService {
     }
 
     public UserResponse updateUser(Long id, UpdatingUserRequest userRequest) {
+
+        if(id.equals(1L)) {
+            throw new UserHaveNotAccess();
+        }
+
         User updatableUser = fetchUser(id);
-        String password = ObjectUtils.isNotEmpty(userRequest.getPassword()) ? passwordEncoder.encode(userRequest.getPassword()):updatableUser.getPassword();
+        String password = ObjectUtils.isNotEmpty(userRequest.getPassword()) ? passwordEncoder.encode(userRequest.getPassword()) : updatableUser.getPassword();
         updatableUser.setFirstName(userRequest.getFirstName());
         updatableUser.setLastName(userRequest.getLastName());
         updatableUser.setRole(userRequest.getRole());
@@ -131,14 +136,18 @@ public class UserService {
     }
 
     private void checkEmail(String email) {
-        if (userRepository.findAll().stream().filter(user -> user.getEmail().equals(email)).count() > 0) {
-             throw new EmailAlreadyExistException();
+        if (userRepository.findAll().stream().anyMatch(user -> user.getEmail().equals(email))) {
+            throw new EmailAlreadyExistException();
         }
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long id) {
-        //TODO super admin
+
+        if (id.equals(1L)) {
+           throw new UserHaveNotAccess();
+        }
+
         User deletingUser = fetchUser(id);
         deletingUser.setDeleted(true);
         deletingUser.setDeletedAt(LocalDateTime.now());

@@ -1,21 +1,12 @@
 package uz.kibera.project.service;
 
-import java.util.List;
-import java.util.Map;
-
-import static uz.kibera.project.common.FireBaseConst.FIREBASE_TOKEN_CONST;
-
-import com.google.common.collect.Lists;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
-import uz.kibera.project.dto.NoticeRequest;
+import uz.kibera.project.configuration.properties.FirebaseProperties;
 import uz.kibera.project.dto.NotificationDto;
-import uz.kibera.project.dto.PushDto;
-import uz.kibera.project.dto.PushRequest;
 import uz.kibera.project.service.pushsender.MulticastPushSender;
 
 @Service
@@ -23,6 +14,7 @@ import uz.kibera.project.service.pushsender.MulticastPushSender;
 @RequiredArgsConstructor
 public class FireBaseService {
     private final MulticastPushSender pushSender;
+    private final FirebaseProperties firebaseProperties;
 
     public void processNotification(NotificationDto dto) {
         pushSender.send(createMulticastMessage(dto));
@@ -37,9 +29,8 @@ public class FireBaseService {
                 .build();
 
         return MulticastMessage.builder()
-                .addToken(FIREBASE_TOKEN_CONST)
+                .addToken(firebaseProperties.getClientToken())
                 .setNotification(notification)
-                .putAllData(Map.of("Hello", "World!"))
                 .build();
     }
 }

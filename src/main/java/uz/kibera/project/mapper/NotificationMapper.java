@@ -21,8 +21,8 @@ public interface NotificationMapper {
     PushDto toPushDto(Push push);
 
     @CreateNewEntity
-    @Mapping(target = "toDate", ignore = true)
-    @Mapping(target = "fromDate", ignore = true)
+    @Mapping(target = "toDate", dateFormat = "dd-MM-yyyy")
+    @Mapping(target = "fromDate", dateFormat = "dd-MM-yyyy")
     Notice toNewNoticeEntity(NoticeRequest noticeRequest);
 
     @Mapping(target = "fromDate", dateFormat = "dd-MM-yyyy")

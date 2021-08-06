@@ -43,10 +43,17 @@ public class ControllerAdvice {
         }
         return ErrorResponse.of(ResponseCode.VALIDATION_ERROR.getCode(), ResponseCode.VALIDATION_ERROR.getMessage(), meta);
     }
+
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     ErrorResponse on(BadCredentialsException exception) {
         return ErrorResponse.of(ResponseCode.BAD_CREDENTIALS);
+    }
+
+    @ExceptionHandler(UserHaveNotAccess.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorResponse on(UserHaveNotAccess exception) {
+        return ErrorResponse.of(ResponseCode.USER_HAVE_NOT_ACCESS);
     }
 
     @ExceptionHandler(JwtAuthenticationException.class)

@@ -12,4 +12,5 @@ public class UserResponse {
     private String lastName;
     private Role role;
     private Boolean locked;
+    private Long regionId;
 }

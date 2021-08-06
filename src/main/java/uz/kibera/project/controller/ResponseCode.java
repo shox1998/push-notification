@@ -22,6 +22,7 @@ public enum ResponseCode {
     IMAGE_NOT_FOUND(411, "Image not found"),
     FILE_IS_TO_LARGE(412, "File is to large"),
     BAD_CREDENTIALS(413, "Incorrect username or password"),
+    USER_HAVE_NOT_ACCESS(420, "This user haven't access for do this operation"),
     FIRE_BASE_SEND_FAILED(414, "Firebase unavailable. Error :");
 
     private final int code;
